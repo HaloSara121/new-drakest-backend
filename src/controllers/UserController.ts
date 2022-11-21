@@ -12,15 +12,17 @@ const UserController = {
   },
 
   create: async (req: Request, res: Response) => {
-    const {id, name, email} = req.body
+    const { name, email } = req.body
   
     const user = await User.findOne({
       where: {
-        id
+        email
       }
     })
 
-    if (user?.dataValues.email !== email) {
+    const userEmail = user?.dataValues.email
+
+    if (userEmail !== email) {
       const response = await User.create({
         name,
         email 
@@ -62,7 +64,7 @@ const UserController = {
     }
       
     res.status(404).json({
-      error: "user doesn't exists"
+      error: "User not found"
     })
   },
 
@@ -83,7 +85,7 @@ const UserController = {
     }
 
     res.status(404).json({
-      error: "user doesn't exists"
+      error: "User not found"
     })
   }
 }

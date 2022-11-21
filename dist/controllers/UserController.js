@@ -5,14 +5,55 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const User_1 = __importDefault(require("../database/models/User"));
 const UserController = {
+    index: async (req, res) => {
+        const response = await User_1.default.findAll();
+        res.status(200).json({
+            response
+        });
+    },
     create: async (req, res) => {
         const { name, email } = req.body;
-        const response = await User_1.default.create({
-            name,
-            email
+        const user = await User_1.default.findOne({
+            where: {
+                email
+            }
         });
-        res.json({
-            response
+        const userEmail = user?.dataValues.email;
+        if (userEmail !== email) {
+            const response = await User_1.default.create({
+                name,
+                email
+            });
+            return res.status(201).json({
+                response
+            });
+        }
+        res.status(400).json({
+            error: "user already exists"
+        });
+    },
+    update: async (req, res) => {
+        const { id } = req.params;
+        const valuesToUpdate = req.body;
+        const user = await User_1.default.findOne({
+            where: {
+                id
+            }
+        });
+        if (user) {
+            const response = await User_1.default.update({
+                ...valuesToUpdate
+            }, {
+                where: {
+                    id
+                }
+            });
+            return res.status(200).json({
+                response
+            });
+        }
+        res.status(404).json({
+            error: "User not found"
         });
     },
     delete: async (req, res) => {
@@ -23,8 +64,13 @@ const UserController = {
             },
             force: true
         });
-        res.json({
-            response
+        if (response === 1) {
+            res.status(200).json({
+                success: "user has been deleted"
+            });
+        }
+        res.status(404).json({
+            error: "User not found"
         });
     }
 };
