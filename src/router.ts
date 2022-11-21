@@ -1,7 +1,10 @@
 import { Router } from "express";
 
+import UserController from "./controllers/UserController";
+
 const router = Router()
 
-router.get('/', (req, res) => res.json({isServerRunning: true}))
+router.post('/users', UserController.create)
+router.delete('/users/:id', UserController.delete)
 
 export { router }
