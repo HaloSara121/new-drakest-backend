@@ -3,7 +3,7 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 
-import { router } from "./router";
+import { router } from "./routes";
 
 import "./database";
 
