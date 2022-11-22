@@ -7,14 +7,18 @@ const CharacterController = {
   index: async (req: Request, res: Response) => {
     const { userId } = req.params
 
+    
     if (userId) {
       const response = await Character.findAll({
         where: {
           userId
         }
       })
+      
+      //FIX se o user não tiver characters
+      if(!response) return res.status(404).json({ error: "User doesn't have characters" })
   
-      res.status(200).json({
+      return res.status(200).json({
         response
       })
     }
