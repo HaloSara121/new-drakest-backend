@@ -1,93 +1,129 @@
-import { Request, Response } from "express"
+import { Request, Response } from "express";
 
-import User from "../database/models/User"
+import User from "../database/models/User";
 
 const UserController = {
   index: async (req: Request, res: Response) => {
-    const response = await User.findAll()
+    const response = await User.findAll();
 
     res.status(200).json({
-      response
-    })
+      response,
+    });
   },
 
-  create: async (req: Request, res: Response) => {
-    const { name, email } = req.body
-  
-    const user = await User.findOne({
+  get: async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const response = await User.findOne({
       where: {
-        email
-      }
-    })
+        id,
+      },
+    }).catch((err) => {
+      return res.status(404).json({ error: "User not found" });
+    });
 
-    const userEmail = user?.dataValues.email
-
-    if (userEmail !== email) {
-      const response = await User.create({
-        name,
-        email 
-      })
-
-      return res.status(201).json({
-        response
-      })
+    if (response) {
+      return res.status(200).json({
+        response,
+      });
     }
-      
-    res.status(400).json({
-      error: "user already exists"
-    })
+
+    res.status(404).json({ error: "User not found!" });
   },
+
+  // create: async (req: Request, res: Response) => {
+  //   const { name, email } = req.body;
+
+  //   const userExists = await User.findOne({
+  //     where: {
+  //       email,
+  //     },
+  //   });
+
+  //   const userEmail = userExists?.dataValues.email;
+
+  //   if (userEmail !== email) {
+  //     const response = await User.create({
+  //       name,
+  //       email,
+  //     });
+
+  //     return res.status(201).json({
+  //       response,
+  //     });
+  //   }
+
+  //   res.status(400).json({
+  //     error: "User already exists",
+  //   });
+  // },
 
   update: async (req: Request, res: Response) => {
-    const { id } = req.params
+    const { id } = req.params;
 
-    const valuesToUpdate = req.body
-  
-    const user = await User.findOne({
+    const { name, email } = req.body;
+
+    const userExists = await User.findOne({
       where: {
-        id
-      }
-    })
+        id,
+      },
+    }).catch((err) => {
+      return res.status(404).json({ error: "User not found" });
+    });
 
-    if (user) {
-      const response = await User.update({
-        ...valuesToUpdate 
-      }, {
-        where: {
-          id
+    const emailAlreadyUsed = await User.findOne({
+      where: {
+        email,
+      },
+    });
+
+    if (userExists && emailAlreadyUsed.dataValues.email !== email) {
+      const response = await User.update(
+        {
+          name,
+          email,
+        },
+        {
+          where: {
+            id,
+          },
         }
-      })
+      ).catch((err) => {
+        return res.status(404).json({ error: "User not found" });
+      });
 
       return res.status(200).json({
-        response
-      })
+        response,
+      });
+    } else if (emailAlreadyUsed.dataValues.email === email) {
+      return res.status(401).json({ error: "Email is already in use" });
     }
-      
-    res.status(404).json({
-      error: "User not found"
-    })
+
+    res.status(404).json({ error: "User not found" });
   },
 
   delete: async (req: Request, res: Response) => {
-    const { id } = req.params
-  
+    const { id } = req.params;
+
     const response = await User.destroy({
       where: {
-        id
+        id,
       },
-      force: true
-    })
-    
+      force: true,
+    }).catch((err) => {
+      return res.status(404).json({ error: "User not found" });
+    });
+
     if (response === 1) {
-      res.status(200).json({
-        success: "user has been deleted"
-      })
+      return res.status(200).json({
+        success: "User has been deleted",
+      });
     }
 
     res.status(404).json({
-      error: "User not found"
-    })
-  }
-}
+      error: "User not found",
+    });
+  },
+};
 
-export default UserController
+export default UserController;

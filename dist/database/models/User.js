@@ -15,16 +15,16 @@ User.init({
     },
     name: {
         type: sequelize_1.DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
     },
     email: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: true,
     },
 }, {
     timestamps: true,
     sequelize: __1.default,
-    paranoid: true
+    paranoid: true,
 });
 exports.default = User;

@@ -5,3 +5,6 @@ build/
 dist/
 tmp/
 temp/
+.env
+nodemon.json
+src/database/index.ts

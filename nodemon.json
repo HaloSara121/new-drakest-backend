@@ -2,5 +2,12 @@
   "watch": ["src"],
   "ext": "ts,json",
   "ignore": ["src/**/*.spec.ts"],
-  "exec": "ts-node --transpile-only ./src/server.ts"
+  "exec": "ts-node --transpile-only ./src/server.ts",
+  "env": {
+    "SEQUELIZE_HOST": "204.216.185.193",
+    "SEQUELIZE_USERNAME": "postgres",
+    "SEQUELIZE_PASSWORD": "0312456",
+    "SEQUELIZE_DATABASE": "drakest",
+    "SEQUELIZE_PORT": 5432
+  }
 }

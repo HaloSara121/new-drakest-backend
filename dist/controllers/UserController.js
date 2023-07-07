@@ -8,28 +8,44 @@ const UserController = {
     index: async (req, res) => {
         const response = await User_1.default.findAll();
         res.status(200).json({
-            response
+            response,
         });
+    },
+    get: async (req, res) => {
+        const { id } = req.params;
+        const response = await User_1.default.findOne({
+            where: {
+                id,
+            },
+        }).catch((err) => {
+            return res.status(404).json({ error: "User not found" });
+        });
+        if (response) {
+            res.status(200).json({
+                response,
+            });
+        }
+        return res.status(404).json({ error: "User not found!" });
     },
     create: async (req, res) => {
         const { name, email } = req.body;
         const user = await User_1.default.findOne({
             where: {
-                email
-            }
+                email,
+            },
         });
         const userEmail = user?.dataValues.email;
         if (userEmail !== email) {
             const response = await User_1.default.create({
                 name,
-                email
+                email,
             });
             return res.status(201).json({
-                response
+                response,
             });
         }
         res.status(400).json({
-            error: "user already exists"
+            error: "user already exists",
         });
     },
     update: async (req, res) => {
@@ -37,41 +53,45 @@ const UserController = {
         const valuesToUpdate = req.body;
         const user = await User_1.default.findOne({
             where: {
-                id
-            }
+                id,
+            },
+        }).catch((err) => {
+            return res.status(404).json({ error: "User not found" });
         });
         if (user) {
             const response = await User_1.default.update({
-                ...valuesToUpdate
+                ...valuesToUpdate,
             }, {
                 where: {
-                    id
-                }
+                    id,
+                },
+            }).catch((err) => {
+                return res.status(404).json({ error: "User not found" });
             });
             return res.status(200).json({
-                response
+                response,
             });
         }
-        res.status(404).json({
-            error: "User not found"
-        });
+        return res.status(404).json({ error: "User not found" });
     },
     delete: async (req, res) => {
         const { id } = req.params;
         const response = await User_1.default.destroy({
             where: {
-                id
+                id,
             },
-            force: true
+            force: true,
+        }).catch((err) => {
+            return res.status(404).json({ error: "User not found" });
         });
         if (response === 1) {
             res.status(200).json({
-                success: "user has been deleted"
+                success: "user has been deleted",
             });
         }
         res.status(404).json({
-            error: "User not found"
+            error: "User not found",
         });
-    }
+    },
 };
 exports.default = UserController;

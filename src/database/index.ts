@@ -1,8 +1,14 @@
 import { Sequelize } from "sequelize";
 
-const sequelizeConnection = new Sequelize('drakest', 'postgres', '0312456', {
-  host: '129.148.47.116',
-  dialect: 'postgres' 
-});
+const sequelizeConnection = new Sequelize(
+  process.env.SEQUELIZE_DATABASE,
+  process.env.SEQUELIZE_USERNAME,
+  process.env.SEQUELIZE_PASSWORD,
+  {
+    host: process.env.SEQUELIZE_HOST,
+    port: Number(process.env.SEQUELIZE_PORT),
+    dialect: "postgres",
+  }
+);
 
-export default sequelizeConnection
+export default sequelizeConnection;
