@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { genSalt, hash } from "bcrypt";
+import { genSalt, hash, compare } from "bcrypt";
 import User from "../database/models/User";
 
 const AuthController = {
@@ -58,8 +58,32 @@ const AuthController = {
       .status(500)
       .json({ message: "Something went wrong! Please try again later." });
   },
+
   login: async (req: Request, res: Response) => {
-    res.status(200);
+    const { email, password } = req.body;
+
+    if (!email) {
+      return res.status(422).json({ message: "E-mail is required!" });
+    }
+    if (!password) {
+      return res.status(422).json({ message: "Password is required!" });
+    }
+
+    const user = await User.findOne({
+      where: {
+        email,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const checkPassword = await compare(password, user.dataValues.password);
+
+    if (!checkPassword) {
+      return res.status(422).json({ message: "Invalid password!" });
+    }
   },
 };
 

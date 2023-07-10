@@ -4,8 +4,8 @@ import sequelizeConnection from "..";
 interface IUser {
   id?: number;
   name: string;
-  image: string;
-  email?: string;
+  image?: string;
+  email: string;
   password: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -15,8 +15,8 @@ interface IUser {
 class User extends Model<IUser> implements IUser {
   public id!: number;
   public name!: string;
-  public image!: string;
-  public email: string;
+  public image: string;
+  public email!: string;
   public password!: string;
 
   public readonly createdAt!: Date;
