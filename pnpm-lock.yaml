@@ -5,9 +5,15 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@types/cors':
+    specifier: ^2.8.13
+    version: 2.8.13
   bcrypt:
     specifier: ^5.1.0
     version: 5.1.0
+  cors:
+    specifier: ^2.8.5
+    version: 2.8.5
   dotenv:
     specifier: ^16.3.1
     version: 16.3.1
@@ -43,6 +49,9 @@ devDependencies:
   '@types/express':
     specifier: ^4.17.14
     version: 4.17.14
+  '@types/jsonwebtoken':
+    specifier: ^9.0.2
+    version: 9.0.2
   '@types/node':
     specifier: ^16.11.10
     version: 16.11.10
@@ -175,6 +184,12 @@ packages:
       '@types/express-serve-static-core': 4.17.35
       '@types/qs': 6.9.7
       '@types/serve-static': 1.15.1
+    dev: true
+
+  /@types/jsonwebtoken@9.0.2:
+    resolution: {integrity: sha512-drE6uz7QBKq1fYqqoFKTDRdFCPHd5TCub75BM+D+cMx7NU9hUz7SESLfC2fSCXVFMO5Yj8sOWHuGqPgjc+fz0Q==}
+    dependencies:
+      '@types/node': 16.11.10
     dev: true
 
   /@types/lodash@4.14.195:
