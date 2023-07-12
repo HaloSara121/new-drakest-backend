@@ -4,7 +4,9 @@ import User from "../database/models/User";
 
 const UserController = {
   index: async (req: Request, res: Response) => {
-    const response = await User.findAll();
+    const response = await User.findAll({
+      attributes: { exclude: ["password"] },
+    });
 
     res.status(200).json({
       response,
@@ -17,6 +19,9 @@ const UserController = {
     const response = await User.findOne({
       where: {
         id,
+      },
+      attributes: {
+        exclude: ["password"],
       },
     }).catch((err) => {
       return res.status(404).json({ error: "User not found" });
@@ -31,75 +36,62 @@ const UserController = {
     res.status(404).json({ error: "User not found!" });
   },
 
-  // create: async (req: Request, res: Response) => {
-  //   const { name, email } = req.body;
-
-  //   const userExists = await User.findOne({
-  //     where: {
-  //       email,
-  //     },
-  //   });
-
-  //   const userEmail = userExists?.dataValues.email;
-
-  //   if (userEmail !== email) {
-  //     const response = await User.create({
-  //       name,
-  //       email,
-  //     });
-
-  //     return res.status(201).json({
-  //       response,
-  //     });
-  //   }
-
-  //   res.status(400).json({
-  //     error: "User already exists",
-  //   });
-  // },
-
   update: async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    const { name, email } = req.body;
+    const { name, image, email } = req.body;
 
     const userExists = await User.findOne({
       where: {
         id,
       },
+      attributes: {
+        exclude: ["password"],
+      },
     }).catch((err) => {
+      console.log(err);
+
       return res.status(404).json({ error: "User not found" });
     });
 
-    const emailAlreadyUsed = await User.findOne({
-      where: {
-        email,
-      },
-    });
-
-    if (userExists && emailAlreadyUsed.dataValues.email !== email) {
-      const response = await User.update(
-        {
-          name,
-          email,
-        },
-        {
-          where: {
-            id,
-          },
-        }
-      ).catch((err) => {
-        return res.status(404).json({ error: "User not found" });
-      });
-
-      return res.status(200).json({
-        response,
-      });
-    } else if (emailAlreadyUsed.dataValues.email === email) {
-      return res.status(401).json({ error: "Email is already in use" });
+    if (!userExists) {
+      return res.status(404).json({ error: "User not found" });
     }
 
-    res.status(404).json({ error: "User not found" });
+    if (email) {
+      const emailAlreadyUsed = await User.findOne({
+        where: {
+          email,
+        },
+        attributes: {
+          exclude: ["password"],
+        },
+      });
+
+      if (emailAlreadyUsed?.dataValues.email === email) {
+        return res.status(422).json({ error: "Email is already in use" });
+      }
+    }
+
+    const response = await User.update(
+      {
+        name,
+        image,
+        email,
+      },
+      {
+        where: {
+          id,
+        },
+      }
+    ).catch((err) => {
+      console.log(err);
+      return res.status(404).json({ error: "User not found" });
+    });
+
+    return res.status(202).json({
+      response,
+    });
   },
 
   delete: async (req: Request, res: Response) => {
