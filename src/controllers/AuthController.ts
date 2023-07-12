@@ -111,8 +111,8 @@ const AuthController = {
       const token = sign({ id: user.id }, secret);
 
       return res
-        .status(202)
-        .json({ message: "User authenticated with success" });
+        .status(200)
+        .json({ message: "User authenticated with success", token });
     } catch (err) {
       console.log(err);
 
