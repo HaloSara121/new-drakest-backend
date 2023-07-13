@@ -10,11 +10,11 @@ const router = Router();
 // Auth
 router.post("/auth/register", AuthController.register);
 router.post("/auth/login", AuthController.login);
-router.post("/auth/validation", checkToken);
+router.get("/auth/validate", checkToken, AuthController.validate);
 
 // Users
 router.get("/users", checkToken, UserController.index);
-router.get("/users/:id", UserController.get);
+router.get("/users/:id", checkToken, UserController.get);
 // router.post("/users", UserController.create);
 router.put("/users/:id", UserController.update);
 router.delete("/users/:id", UserController.delete);

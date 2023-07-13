@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { genSalt, hash, compare } from "bcrypt";
-import { sign } from "jsonwebtoken";
+import { sign, verify, decode } from "jsonwebtoken";
 import User from "../database/models/User";
 
 const AuthController = {
@@ -84,10 +84,14 @@ const AuthController = {
     const { email, password } = req.body;
 
     if (!email) {
-      return res.status(422).json({ message: "E-mail is required!" });
+      return res
+        .status(422)
+        .json({ message: "O E-mail é obrigatório!", fieldMessage: "email" });
     }
     if (!password) {
-      return res.status(422).json({ message: "Password is required!" });
+      return res
+        .status(422)
+        .json({ message: "A senha é obrigatória!", fieldMessage: "password" });
     }
 
     const user = await User.findOne({
@@ -97,13 +101,17 @@ const AuthController = {
     });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res
+        .status(404)
+        .json({ message: "Usuário não encontrado", fieldMessage: "toast" });
     }
 
     const checkPassword = await compare(password, user.dataValues.password);
 
     if (!checkPassword) {
-      return res.status(422).json({ message: "Invalid password!" });
+      return res
+        .status(422)
+        .json({ message: "Senha ou e-mail inválido!", fieldMessage: "toast" });
     }
 
     try {
@@ -112,13 +120,30 @@ const AuthController = {
 
       return res
         .status(200)
-        .json({ message: "User authenticated with success", token });
+        .json({ message: "Usuário autenticado com sucesso", token });
     } catch (err) {
       console.log(err);
 
       return res
         .status(500)
         .json({ message: "Something went wrong! Please try again later." });
+    }
+  },
+
+  validate: async (req: Request, res: Response) => {
+    try {
+      const secret = process.env.APP_SECRET;
+
+      const authHeader = req.headers["authorization"];
+      const token = authHeader && authHeader.split(" ")[1];
+
+      const payload = verify(token, secret);
+
+      return res.status(200).json({ message: "Valid token", userId: payload });
+    } catch (err) {
+      console.log(err);
+
+      return res.status(400).json({ message: "Invalid token! " });
     }
   },
 };
