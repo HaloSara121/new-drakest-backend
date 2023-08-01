@@ -131,7 +131,7 @@ const AuthController = {
     }
   },
 
-  recoveryRequest: async (req: Request, res: Response) => {
+  forgotPassword: async (req: Request, res: Response) => {
     const { email } = req.body;
 
     if (!email) {
