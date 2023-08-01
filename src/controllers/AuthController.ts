@@ -159,7 +159,7 @@ const AuthController = {
         expiresIn: "15m",
       });
 
-      const link = `http://localhost:3333/auth/password-reset/${user.id}/${token}`;
+      const link = `${process.env.FRONT_END_URL}/password-reset/${user.id}/${token}`;
 
       mailgunClient.messages.create(process.env.MAILGUN_DOMAIN, {
         from: "drakest@mail.com",
